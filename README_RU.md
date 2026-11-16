@@ -1,91 +1,87 @@
-[中文](README.md) | [English](README_EN.md) | [Русский](README_RU.md)
-
 # SniShaper
 
-[![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat-square&logo=go)](https://golang.org)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)]()
-[![Wiki](https://img.shields.io/badge/Docs-Wiki-orange?style=flat-square)](https://github.com/coolapijust/snishaper/wiki)
+[中文](README.md) | [English](README_EN.md) | [Русский](README_RU.md)
 
-**SniShaper** — это локальный прокси-инструмент, разработанный специально для сложных сетевых условий. Он интегрирует различные технологии обхода блокировок, включая **инъекцию ECH**, **фрагментацию TLS-RF**, **реконструкцию соединений QUIC** и **легковесное проксирование в режиме сервера**, обеспечивая стабильный доступ в интернет.
+[![Go Version](https://img.shields.io/badge/Go-1.27%2B-00ADD8?style=flat&logo=go)](https://golang.org) [![Core](https://img.shields.io/badge/Ядро-snishaper--core-00ADD8?style=flat&logo=go)](https://github.com/SnishaperTeam/snishaper-core) [![License](https://img.shields.io/badge/Лицензия-AGPL--3.0-blue?style=flat&logo=open-source-initiative)](LICENSE) [![Wiki](https://img.shields.io/badge/Документация-Wiki-orange?style=flat&logo=readthedocs)](https://github.com/SnishaperTeam/SniShaper/wiki) [![GitHub Release](https://img.shields.io/github/v/release/SnishaperTeam/SniShaper?style=flat&logo=github&label=Релиз)](https://github.com/SnishaperTeam/SniShaper/releases) [![GitHub Downloads](https://img.shields.io/github/downloads/SnishaperTeam/SniShaper/total?style=flat&logo=github&label=Загрузки)](https://github.com/SnishaperTeam/SniShaper/releases) [![GitHub last commit](https://img.shields.io/github/last-commit/SnishaperTeam/SniShaper?style=flat&logo=git&label=Последний%20коммит)](https://github.com/SnishaperTeam/SniShaper/commits/main) [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/SnishaperTeam/SniShaper/build.yml?style=flat&logo=githubactions&label=CI)](https://github.com/SnishaperTeam/SniShaper/actions)
+
+**SniShaper** — это локальный прокси-инструмент для сложных сетевых условий, использующий **инъекцию ECH**, **фрагментацию TLS**, **преобразование QUIC**, **миграцию сессий** и другие решения, обеспечивая стабильный и гибкий доступ в интернет.
+
+Проект поддерживает кроссплатформенность. Подробности — в **[Platform_RU.md](docs/Platform_RU.md)**.
+
+---
+
+## Смежный проект: FlowWeaver
+
+[**FlowWeaver**](https://github.com/SnishaperTeam/FlowWeaver) — полнофункциональная ветка этого проекта, которую ведёт тот же мейнтейнер. Оба проекта **активно поддерживаются**:
+
+|                 | SniShaper (этот репозиторий)                    | [FlowWeaver](https://github.com/SnishaperTeam/FlowWeaver)    |
+| --------------- | ----------------------------------------------- | ------------------------------------------------------------ |
+| Направленность  | Лёгкий прокси-сервер                            | Полнофункциональный клиент / шлюз                            |
+| Сильные стороны | Инъекция ECH, фрагментация TLS, миграция сессий | Подписки Clash, мультипротокольные узлы, WireGuard, TUN-шлюз |
+
+Проекты используют разные кодовые базы и развиваются независимо. Форматы файлов подписок и правил совместимы. Если вам нужны **импорт подписок, выбор узлов разных протоколов или туннели WireGuard**, используйте FlowWeaver.
+
+Оба проекта используют прокси-движок из отдельной библиотеки **[snishaper-core](https://github.com/SnishaperTeam/snishaper-core)**: прокси-сервер, движок правил, DoH-резолвер, менеджер сертификатов и плоскость данных TUN находятся в ней, а в этом репозитории остаётся только прикладной слой (GUI, CLI, системная интеграция и данные правил).
+
+---
+
+## Сообщество
+
+Присоединяйтесь к группе QQ **[Snishaper and FlowWeaver building](https://qm.qq.com/q/GtBOkAOiME)**, чтобы напрямую общаться с пользователями и разработчиками SniShaper и FlowWeaver, сообщать о проблемах и предлагать идеи.
+
+---
+
+## План работ (TODO)
+
+Информацию о предстоящих планах по разработке и выполненных задачах можно найти в файле [todo.md](todo.md).
 
 ---
 
 ## Возможности
 
-- **Шесть режимов проксирования**: поддержка широкого спектра режимов от легковесного `transparent` до продвинутого `server` проксирования для любых задач.
-- **Гибкие стратегии**:
-  - **TLS-RF (фрагментация TLS)**: обход точечных блокировок по SNI с помощью фрагментации.
-  - **Реплей QUIC**: обход стандартного обнаружения SNI с помощью функций `quic-go`.
-  - **Инъекция ECH**: автоматическое получение и внедрение echconfig.
-- **Интеллектуальная маршрутизация**: автоматическое определение заблокированных доменов на основе GFWList, позволяющее подключаться к большинству сайтов вне правил без ручной настройки.
+- **Многорежимное прокси**: MITM (человек посередине), Transparent, TLS-RF (фрагментация TLS), QUIC, Migration (миграция сессий), Direct — для различных сценариев работы с сайтами.
+- **TUN виртуальный сетевой адаптер**: прозрачный глобальный перехват трафика, авто-маршрутизация и перехват DNS.
+- **Инъекция ECH**: автоматическое получение и внедрение ECH Config с DoH-обнаружением и горячей заменой.
+- **Интеллектуальная маршрутизация**: автоматическое определение заблокированных доменов на основе GFWList с автоматическим покрытием множества сайтов, не включённых в правила.
+- **Шифрованный DNS**: встроенный защищённый DNS-резолвер с балансировкой узлов для стабильного разрешения.
+- **Cloudflare IP пул**: автоматическое измерение скорости, проверка работоспособности и обновление.
+- **NAT64 поддержка**: более гибкий IP-выход, обеспечивающий доступ к сервисам при IP-блокировке.
+- **Режим эволюции**: автоматическое тестирование комбинаций правил для поиска оптимального способа доступа к целевому сайту с применением в один клик.
 
 ---
 
 ## Быстрый старт
 
-### 1. Запуск
-Скачайте [последнюю версию](https://github.com/coolapijust/snishaper/releases) и запустите `snishaper.exe`.
+Проект изначально разрабатывался только под Windows, а позднее была добавлена поддержка Linux. Сейчас доступны как GUI, так и CLI.
 
-### 2. Переустановка сертификата
-В главном интерфейсе нажмите «Управление сертификатами» -> «**Нажмите для переустановки сертификата**».
+Для большинства пользователей мы рекомендуем скачать последнюю стабильную сборку для Windows прямо из [Releases](https://github.com/SnishaperTeam/SniShaper/releases).
 
-### 3. Настройка и запуск
-Программное обеспечение поставляется с богатым набором официальных правил. Вы также можете настроить собственные правила на панели правил и нажать кнопку «**Запустить прокси**».
+По остальным платформам и инструкциям по сборке обратитесь к следующим документам:
+
+- **[Platform_RU.md](docs/Platform_RU.md)** — быстрый старт для платформ, использование CLI и мобильные версии.
+- **[build_RU.md](docs/build_RU.md)** — руководство по сборке и матрица из 12 целей.
 
 ---
 
 ## Документация
 
-Для получения подробных технических принципов, руководств по развертыванию и настройке, пожалуйста, обратитесь к [**GitHub Wiki**](https://github.com/coolapijust/snishaper/wiki):
+Для получения подробных технических принципов, руководств по развертыванию и настройке, обратитесь к [**GitHub Wiki**](https://github.com/SnishaperTeam/SniShaper/wiki):
 
-- **[Основные режимы прокси](https://github.com/coolapijust/snishaper/wiki/Core-Proxy-Modes)**: понимание принципов работы TLS-RF, QUIC и серверного режима.
-- **[Руководство по правилам](https://github.com/coolapijust/snishaper/wiki/Custom-Rules-Guide)**: как разрабатывать целевые правила.
-- **[Настройка GUI](https://github.com/coolapijust/snishaper/wiki/GUI-Configuration)**: быстрая настройка правил в интерфейсе.
-- **[Развертывание сервера](https://github.com/coolapijust/snishaper/wiki/Server-Deployment)**: настройка собственного серверного узла на CF Workers или VPS.
-- **[Устранение неполадок](https://github.com/coolapijust/snishaper/wiki/FAQ)**: решение проблем с сертификатами, правилами и другим.
+- **[Основные режимы прокси](https://github.com/SnishaperTeam/SniShaper/wiki/Core-Proxy-Modes)**: понимание принципов работы TLS-RF, QUIC и серверного режима.
+- **[Руководство по правилам](https://github.com/SnishaperTeam/SniShaper/wiki/Custom-Rules-Guide)**: как разрабатывать целевые правила.
+- **[Настройка GUI](https://github.com/SnishaperTeam/SniShaper/wiki/GUI-Configuration)**: быстрая настройка правил в интерфейсе.
+- **[Устранение неполадок](https://github.com/SnishaperTeam/SniShaper/wiki/FAQ)**: решение проблем с сертификатами, правилами и другим.
+- **[Соглашение для соавторов (Collaborator Agreement)](docs/COLLABORATOR_AGREEMENT.md)**: условия, приглашение и порядок принятия статуса соавтора репозитория.
 
 ---
 
 ## Сборка и разработка
 
-Проект построен с использованием **Wails v3**.
+В настоящее время фронтенд построен на **Wails v3 + React 19 + MUI**, а ядро разрабатывается на **Go**, поддерживая GUI для Windows / Linux и кроссплатформенный CLI — всего 12 целей сборки. Полное руководство по сборке — в **[build_RU.md](docs/build_RU.md)**.
 
-```powershell
-# Клонировать репозиторий
-git clone https://github.com/SniShaper/snishaper.git
-cd snishaper
-
-# Установить зависимости фронтенда
-cd frontend
-npm install
-
-# Собрать статические ресурсы фронтенда
-npm run build
-cd ..
-
-# Полная компиляция за один шаг
-powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1
-
-## Или с PowerShell 7
-pwsh -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1
-# Компиляция основной программы на Go
-go build -ldflags="-s -w" -o "build/bin/snishaper.exe"
-```
-
-Рекомендации по окружению разработки:
-
-- `Go 1.25+`
-- `Node.js 24+`
-- `npm 11+`
-
-Результаты сборки:
-
-- Ресурсы фронтенда находятся в `frontend/dist`
-- Исполняемый файл находится в `build/bin/snishaper.exe`
+Мы завершим реализацию нативного GUI в одном из следующих стабильных релизов, чтобы сократить потребление памяти фронтендом.
 
 ---
-## Кроссплатформенность
-Программа поддерживает платформы Windows и Linux. Для версии Linux обратитесь к [Linux версия](https://github.com/dongzheyu/SniShaper-Linux/).
 
 ## Благодарности
 
@@ -93,16 +89,43 @@ go build -ldflags="-s -w" -o "build/bin/snishaper.exe"
 
 - [DoH-ECH-Demo](https://github.com/0xCaner/DoH-ECH-Demo)
 - [lumine](https://github.com/moi-si/lumine)
-- [usque](https://github.com/Diniboy1123/usque)
 
-## Участники
+## Активность проекта и участники
 
-Благодарим следующих участников за их вклад в этот репозиторий:
+### Значки активности
 
-| <a href="https://github.com/mechrevo"><img src="https://avatars.githubusercontent.com/mechrevo" width="40" height="40" style="border-radius: 50%;" alt="mechrevo" /></a> | <a href="https://github.com/dongzheyu"><img src="https://avatars.githubusercontent.com/dongzheyu" width="40" height="40" style="border-radius: 50%;" alt="dongzheyu" /></a> | <a href="https://github.com/JetCPP-dongle"><img src="https://avatars.githubusercontent.com/JetCPP-dongle" width="40" height="40" style="border-radius: 50%;" alt="JetCPP-dongle" /></a> |
-| :---: | :---: | :---: |
-| [mechrevo](https://github.com/mechrevo) | [dongzheyu](https://github.com/dongzheyu) | [JetCPP-dongle](https://github.com/JetCPP-dongle) |
+[![GitHub contributors](https://img.shields.io/github/contributors/SnishaperTeam/SniShaper?style=flat&label=Всего участников)](https://github.com/SnishaperTeam/SniShaper/graphs/contributors)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/SnishaperTeam/SniShaper?style=flat&label=Коммитов в месяц)](https://github.com/SnishaperTeam/SniShaper/graphs/contributors)
+[![GitHub last commit](https://img.shields.io/github/last-commit/SnishaperTeam/SniShaper?style=flat&label=Последний коммит)](https://github.com/SnishaperTeam/SniShaper/commits/main)
+
+### Тренд активности
+
+<div align="center">
+<a href="https://repobeats.axiom.co/" target="_blank">
+<img src="https://repobeats.axiom.co/api/embed/f62c98a5231da45588ee71f26e3c1cc3f64edb6b.svg" alt="Repobeats analytics" />
+</a>
+</div>
+
+### Граф участников
+
+<div align="center">
+<a href="https://github.com/SnishaperTeam/SniShaper/graphs/contributors" target="_blank">
+<img src="https://contrib.rocks/image?repo=SnishaperTeam/SniShaper" alt="Contributors" />
+</a>
+</div>
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=snishaper%2Fsnishaper&type=timeline&logscale=&releases=&legend=bottom-right">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=snishaper/snishaper&type=timeline&theme=dark&logscale&legend=bottom-right" />
+<source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=snishaper/snishaper&type=timeline&logscale&legend=bottom-right" />
+<img alt="Star History Chart" src="https://api.star-history.com/chart?repos=snishaper/snishaper&type=timeline&logscale&legend=bottom-right" />
+</picture>
+</a>
+
+---
 
 ## Лицензия
 
-[MIT License](LICENSE)
+[GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0).
